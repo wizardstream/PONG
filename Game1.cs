@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 
 namespace Pong
 {
@@ -9,7 +10,8 @@ namespace Pong
     {
         Texture2D PlayerTexture;
         Texture2D LoadTexture;
-        Vector2 ballPosition;
+        Song Song;
+        Vector2 PlayerPos;
         float ballSpeed;
         Vector2 LoadPosition;
 
@@ -17,23 +19,25 @@ namespace Pong
 
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
+        private Enemy _enemy;
 
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            IsMouseVisible = true;
+            IsMouseVisible = false;
+            _enemy = new Enemy();
         }
 
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            ballPosition = new Vector2(_graphics.PreferredBackBufferWidth / 2,
+            PlayerPos = new Vector2(_graphics.PreferredBackBufferWidth / 2,
                 _graphics.PreferredBackBufferHeight / 2);
             ballSpeed = 100f;
             LoadPosition = new Vector2(_graphics.PreferredBackBufferWidth / 2,
                 _graphics.PreferredBackBufferHeight / 2);
-
+            
             base.Initialize();
         }
 
@@ -41,54 +45,63 @@ namespace Pong
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
+            _enemy.SetContent(Content.Load<Texture2D>("fish"));
+
             // TODO: use this.Content to load your game content here
             PlayerTexture = Content.Load<Texture2D>("crocim");
             LoadTexture = Content.Load<Texture2D>("loading_desktop_by_brianmccumber-d41z4h6");
+
+            Song = Content.Load<Song>("underwater");
+            MediaPlayer.Play(Song);
+
         }
 
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
+            {
+                IsMouseVisible = true;
+            }
+                
 
             // TODO: Add your update logic here
             var kstate = Keyboard.GetState();
 
             if (kstate.IsKeyDown(Keys.W))
             {
-                ballPosition.Y -= ballSpeed * (float) gameTime.ElapsedGameTime.TotalSeconds;
+                PlayerPos.Y -= ballSpeed * (float) gameTime.ElapsedGameTime.TotalSeconds;
             }
 
             if (kstate.IsKeyDown(Keys.S))
             {
-                ballPosition.Y += ballSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                PlayerPos.Y += ballSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
             }
                 
 
             if (kstate.IsKeyDown(Keys.A))
             {
-                ballPosition.X -= ballSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                PlayerPos.X -= ballSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
             }
                 
 
             if (kstate.IsKeyDown(Keys.D))
             {
-                ballPosition.X += ballSpeed * (float) gameTime.ElapsedGameTime.TotalSeconds;
+                PlayerPos.X += ballSpeed * (float) gameTime.ElapsedGameTime.TotalSeconds;
             }
 
-            if (ballPosition.X > _graphics.PreferredBackBufferWidth - PlayerTexture.Width / 2)
-                ballPosition.X = _graphics.PreferredBackBufferWidth - PlayerTexture.Width / 2;
-            else if (ballPosition.X < PlayerTexture.Width / 2)
-                ballPosition.X = PlayerTexture.Width / 2;
+            if (PlayerPos.X > _graphics.PreferredBackBufferWidth - PlayerTexture.Width / 2)
+                PlayerPos.X = _graphics.PreferredBackBufferWidth - PlayerTexture.Width / 2;
+            else if (PlayerPos.X < PlayerTexture.Width / 2)
+                PlayerPos.X = PlayerTexture.Width / 2;
 
-            if (ballPosition.Y > _graphics.PreferredBackBufferHeight - PlayerTexture.Height / 2)
-                ballPosition.Y = _graphics.PreferredBackBufferHeight - PlayerTexture.Height / 2;
+            if (PlayerPos.Y > _graphics.PreferredBackBufferHeight - PlayerTexture.Height / 2)
+                PlayerPos.Y = _graphics.PreferredBackBufferHeight - PlayerTexture.Height / 2;
                 
-            else if (ballPosition.Y < PlayerTexture.Height / 2)
-                ballPosition.Y = PlayerTexture.Height / 2;
-                
+            else if (PlayerPos.Y < PlayerTexture.Height / 2)
+                PlayerPos.Y = PlayerTexture.Height / 2;
 
 
+            _enemy.Update(PlayerPos);
             base.Update(gameTime);
         }
 
@@ -110,7 +123,7 @@ namespace Pong
                 _spriteBatch.Begin();
                 _spriteBatch.Draw(
                     PlayerTexture,
-                    ballPosition,
+                    PlayerPos,
                     null,
                     Color.White,
                     0f,
@@ -118,6 +131,7 @@ namespace Pong
                     Vector2.One,
                     SpriteEffects.None,
                     0f);
+                _enemy.Draw(_spriteBatch);
                 _spriteBatch.End();
             }
             else if (Scene == "Loading1")
