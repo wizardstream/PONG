@@ -7,13 +7,13 @@ namespace Pong
 {
     public class Game1 : Game
     {
-        Texture2D ballTexture;
+        Texture2D PlayerTexture;
         Texture2D LoadTexture;
         Vector2 ballPosition;
         float ballSpeed;
         Vector2 LoadPosition;
 
-        private string Scene = "Loading1";
+        private string Scene = "Play";
 
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
@@ -42,7 +42,7 @@ namespace Pong
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
-            ballTexture = Content.Load<Texture2D>("ball");
+            PlayerTexture = Content.Load<Texture2D>("crocim");
             LoadTexture = Content.Load<Texture2D>("loading_desktop_by_brianmccumber-d41z4h6");
         }
 
@@ -76,16 +76,16 @@ namespace Pong
                 ballPosition.X += ballSpeed * (float) gameTime.ElapsedGameTime.TotalSeconds;
             }
 
-            if (ballPosition.X > _graphics.PreferredBackBufferWidth - ballTexture.Width / 2)
-                ballPosition.X = _graphics.PreferredBackBufferWidth - ballTexture.Width / 2;
-            else if (ballPosition.X < ballTexture.Width / 2)
-                ballPosition.X = ballTexture.Width / 2;
+            if (ballPosition.X > _graphics.PreferredBackBufferWidth - PlayerTexture.Width / 2)
+                ballPosition.X = _graphics.PreferredBackBufferWidth - PlayerTexture.Width / 2;
+            else if (ballPosition.X < PlayerTexture.Width / 2)
+                ballPosition.X = PlayerTexture.Width / 2;
 
-            if (ballPosition.Y > _graphics.PreferredBackBufferHeight - ballTexture.Height / 2)
-                ballPosition.Y = _graphics.PreferredBackBufferHeight - ballTexture.Height / 2;
+            if (ballPosition.Y > _graphics.PreferredBackBufferHeight - PlayerTexture.Height / 2)
+                ballPosition.Y = _graphics.PreferredBackBufferHeight - PlayerTexture.Height / 2;
                 
-            else if (ballPosition.Y < ballTexture.Height / 2)
-                ballPosition.Y = ballTexture.Height / 2;
+            else if (ballPosition.Y < PlayerTexture.Height / 2)
+                ballPosition.Y = PlayerTexture.Height / 2;
                 
 
 
@@ -109,12 +109,12 @@ namespace Pong
             {
                 _spriteBatch.Begin();
                 _spriteBatch.Draw(
-                    ballTexture,
+                    PlayerTexture,
                     ballPosition,
                     null,
                     Color.White,
                     0f,
-                    new Vector2(ballTexture.Width / 2, ballTexture.Height / 2),
+                    new Vector2(PlayerTexture.Width / 2, PlayerTexture.Height / 2),
                     Vector2.One,
                     SpriteEffects.None,
                     0f);
